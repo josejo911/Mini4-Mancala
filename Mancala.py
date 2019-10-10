@@ -9,112 +9,112 @@ class Mancala:
 
 
     def __init__(self):
-        self.tablero = [4,4,4,4,4,4,0,4,4,4,4,4,4,0]
-        self.turno_jugador = 1
-        self.jugada_inicial = None
+        self.table = [4,4,4,4,4,4,0,4,4,4,4,4,4,0]
+        self.plyrTurn = 1
+        self.frstMove = None
 
 
     def jugada(self,posicion_de_jugada):
-        stack_de_piezas = self.tablero[posicion_de_jugada]
-        self.tablero[posicion_de_jugada] = 0
+        stack_de_piezas = self.table[posicion_de_jugada]
+        self.table[posicion_de_jugada] = 0
         ultimo_turno = self.distribucion(stack_de_piezas,posicion_de_jugada)
-        self.reglas_especiales(ultimo_turno)
-        self.cambio_de_turno()
+        self.specialMove(ultimo_turno)
+        self.nextTurn()
 
 
-    def distribucion(self, stack, posicion_obtenido):
-        posicion_ahora = 0
+    def distribucion(self, stack, takenPos):
+        actualPos = 0
         while stack > 0:
-            posicion_obtenido += 1
+            takenPos += 1
 
-            if (posicion_ahora+posicion_obtenido) >= len(self.tablero):
-                posicion_ahora -= 14
-            if self.turno_jugador == 1 and (posicion_ahora+posicion_obtenido) != 13:
-                self.tablero[posicion_ahora+posicion_obtenido] += 1
+            if (actualPos+takenPos) >= len(self.table):
+                actualPos -= 14
+            if self.plyrTurn == 1 and (actualPos+takenPos) != 13:
+                self.table[actualPos+takenPos] += 1
                 stack -= 1
 
-            if self.turno_jugador == 2 and (posicion_ahora+posicion_obtenido) != 6:
-                self.tablero[posicion_ahora+posicion_obtenido] += 1
+            if self.plyrTurn == 2 and (actualPos+takenPos) != 6:
+                self.table[actualPos+takenPos] += 1
                 stack -= 1
 
-        ultima_piedra = (posicion_ahora+posicion_obtenido)
+        ultima_piedra = (actualPos+takenPos)
         return ultima_piedra
 
-    def posibles_jugadas(self):
+    def posibleMove(self):
 
-        jugadas_posibles = []
-        if self.turno_jugador == 1:
-            jugadas_posibles = [0,1,2,3,4,5]
+        posibleMoves = []
+        if self.plyrTurn == 1:
+            posibleMoves = [0,1,2,3,4,5]
         else:
-            jugadas_posibles = [7,8,9,10,11,12]
+            posibleMoves = [7,8,9,10,11,12]
         elements_to_delete = []
-        for x in jugadas_posibles:
-            if self.tablero[x] == 0:
+        for x in posibleMoves:
+            if self.table[x] == 0:
                 elements_to_delete.append(x)
         
         for x in elements_to_delete:
-            jugadas_posibles.remove(x)
+            posibleMoves.remove(x)
 
-        return jugadas_posibles
+        return posibleMoves
 
 
-    def reglas_especiales(self, posicion_final):
+    def specialMove(self, finalPos):
 
         # Jugador 1
-        if self.turno_jugador == 1: 
-            if posicion_final == 6:
-                self.cambio_de_turno()
-            elif self.tablero[posicion_final] == 1:
-                self.tablero[posicion_final] = 0
-                self.tablero[6] += 1
-                self.tablero[6] += self.tablero[12-posicion_final]
-                self.tablero[12-posicion_final] = 0
+        if self.plyrTurn == 1: 
+            if finalPos == 6:
+                self.nextTurn()
+            elif self.table[finalPos] == 1:
+                self.table[finalPos] = 0
+                self.table[6] += 1
+                self.table[6] += self.table[12-finalPos]
+                self.table[12-finalPos] = 0
         # Jugador 2
         else:
-            if posicion_final == 13:
-                self.cambio_de_turno()
-            elif self.tablero[posicion_final] == 1:
-                self.tablero[posicion_final] = 0
-                self.tablero[13] += 1
-                self.tablero[13] += self.tablero[12-posicion_final]
-                self.tablero[12-posicion_final] = 0
+            if finalPos == 13:
+                self.nextTurn()
+            elif self.table[finalPos] == 1:
+                self.table[finalPos] = 0
+                self.table[13] += 1
+                self.table[13] += self.table[12-finalPos]
+                self.table[12-finalPos] = 0
 
 
 
-    def cambio_de_turno(self):
-        next_player = self.turno_jugador % 2
-        self.turno_jugador = next_player + 1
+    def nextTurn(self):
+        next_player = self.plyrTurn % 2
+        self.plyrTurn = next_player + 1
 
 
 
     def get_ganador(self, end=False):
-        jugador_1 = sum(self.tablero[0:7])
-        jugador_2 = sum(self.tablero[7:14])
+        plyr1 = sum(self.table[0:7])
+        plyr2 = sum(self.table[7:14])
         if end:
-            print('Puntaje del jugado: {}'.format(jugador_2))
-            print('Puntaje del AI: {}'.format(jugador_1))
+            print('Puntaje del jugado: {}'.format(plyr2))
+            print('Puntaje del AI: {}'.format(plyr1))
 
-        if (jugador_1 > jugador_2):
+        if (plyr1 > plyr2):
             return 1
-        elif(jugador_1 < jugador_2):
+        elif(plyr1 < plyr2):
             return 2
         else:
             return 0
 
 
-    def get_primera_jugada(self):
-        return self.jugada_inicial
+    def getFrstMove(self):
+        return self.frstMove
 
 
-    def set_primera_jugada(self, jugada_1):
-        self.jugada_inicial = jugada_1
+    def setFrstMove(self, move_1):
+        self.frstMove = move_1
 
-    def print_tablero(self):
-        return self.tablero
+    def print_table(self):
+        return self.table
 
     def __str__(self):
-        tabl_reverse = self.tablero[::-1]
-        tablero_en_string = " " + str(tabl_reverse[8:]) + "\n"
-        tablero_en_string += str(self.tablero[6])+ "                  "+ str(self.tablero[13]) + "\n"
-        tablero_en_string += " " + str(self.tablero[7:13])
-        return tablero_en_string
+        tabl_reverse = self.table[::-1]
+        table_en_string = " " + str(tabl_reverse[8:]) + "\n"
+        table_en_string += str(self.table[6])+ "                  "+ str(self.table[13]) + "\n"
+        table_en_string += " " + str(self.table[7:13])
+        return table_en_string
